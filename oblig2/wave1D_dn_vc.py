@@ -311,7 +311,7 @@ class PlotAndStoreSolution:
         casename='tmp',    # Prefix in filenames
         umin=-1, umax=1,   # Fixed range of y axis
         pause_between_frames=None,  # Movie speed
-        backend='matplotlib',       # or 'gnuplot' or None
+        backend='None',       # or 'gnuplot' or None
         screen_movie=True, # Show movie on screen?
         title='',          # Extra message in title
         skip_frame=1,      # Skip every skip_frame frame
@@ -326,6 +326,7 @@ class PlotAndStoreSolution:
         elif backend in ('matplotlib', 'gnuplot'):
             module = 'scitools.easyviz.' + backend + '_'
             exec('import %s as plt' % module)
+        else: plt = None
         self.plt = plt
         self.screen_movie = screen_movie
         self.title = title

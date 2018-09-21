@@ -1,4 +1,4 @@
-from wave1D_dn_vc import solver
+from wave1D_dn_vc import solver, PlotAndStoreSolution
 import numpy as np
 
 """
@@ -6,27 +6,29 @@ import numpy as np
 """
 
 L = 1
-C = 0.8  # This could be changed
+C = 0.75  # This could be changed
 dt = 0.1
 T = 1
-m = 9  # number of iterations halving dt.
+m = 10  # number of iterations halving dt.
 
 
 class Errors:
     """Calculate and store errors of solutions"""
 
-    e2_sum = 0
     errors = []
     def __call__(self, u, x, t, n):
         """Called by solver"""
+        if n == 0:
+            self.e2_sum = 0
+
+        self.e2_sum += sum((u_e(x, t[n]) - u)**2)
+
         if n == len(t) - 1:
             dx = x[1] - x[0]
             dt = t[1] - t[0]
             self.errors = self.errors + [np.sqrt(dx * dt * self.e2_sum)]
-            self.e2_sum = 0
             return
 
-        self.e2_sum += sum(u_e(x, t[n]) - u)
 
 errors = Errors()
 
@@ -53,7 +55,7 @@ def c(x):
 
 
 # essentially a modified Wave1D_dn_vc.py implementing different approximations
-def neumann_solver(I, V, f, c, L, dt, C, T, user_action=errors, approx='a'):
+def neumann_solver(I, V, f, c, L, dt, C, T, user_action=None, approx='a'):
     Nt = int(round(T/dt))
     t = np.linspace(0, Nt*dt, Nt+1)
 
@@ -109,6 +111,7 @@ def neumann_solver(I, V, f, c, L, dt, C, T, user_action=errors, approx='a'):
     i = Ix[-1]
     im1 = i-1
     ip1 = im1  # i+1 -> i-1
+    #print(q[i], c(x[i]-0.5*dx)**2)
 
     if approx == 'a':
         u[i] = u_1[i] + dt*V(x[i]) + \
@@ -170,13 +173,15 @@ def neumann_solver(I, V, f, c, L, dt, C, T, user_action=errors, approx='a'):
 
 for i in range(0, m):
     neumann_solver(I, V, f, c, L, dt, C, T, user_action=errors, approx='a')
+    dt = 0.5 * dt
     if i == 0:
         continue
 
     r = np.log(errors.errors[i] / errors.errors[i-1]) / np.log(0.5)
-    print(i, r)
-    dt = 0.5 * dt
+    print(i, r, errors.errors[i-1])
 
+
+print(errors.errors)
 """
 output:
 (1, -0.0)
@@ -196,7 +201,7 @@ showing a convergence rate tending to 1. Linear convergence.
 """
 print('b)')
 
-
+dt = 0.1
 def f_b(x, t):
     pi_L = np.pi / L
     return -np.cos(t) * np.cos(pi_L*x) + pi_L**2 * np.cos(t)*(np.cos(pi_L*x) + np.cos(2*pi_L*x))
@@ -210,14 +215,15 @@ def c_b(x):
 b_errors = Errors()
 
 for i in range(0, m):
-    neumann_solver(I, V, f_b, c_b, L, dt, C, T, user_action=errors, approx='b')
+    neumann_solver(I, V, f_b, c_b, L, dt, C, T, user_action=b_errors, approx='b')
+    dt = 0.5 * dt
     if i == 0:
         continue
 
     r = np.log(b_errors.errors[i] / b_errors.errors[i-1]) / np.log(0.5)
     print(i, r)
-    dt = 0.5 * dt
+
 
 """
-not sure why implementation in b) is not working yet.
+not sure why (implementation in b)) NOTHING is not working yet.
 """
