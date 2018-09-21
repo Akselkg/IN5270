@@ -1,0 +1,19 @@
+Files are easy to locate, good names and comments to.
+The program is a bit hard to read, because it is a bit messy,
+but understandable!. Very good formats on the code,
+with good space between equation parts, and good organisation with
+functions first and the running part at the end, but could use a bit
+less functions.
+
+The program answers the problem in the exercise, but something
+in the program is wrong so you get wrong numbers (we did not find
+it together). 
+
+ there is some (automatic) verifications of the code.
+
+ I can run the code, a bit work to change between exercises
+ and c) is missing but after looking at it, it looks good
+
+ The mandatory exercise is approved from my part.
+ it is missing some parts but you have tried and know what u need to
+ do and doing in the program.
